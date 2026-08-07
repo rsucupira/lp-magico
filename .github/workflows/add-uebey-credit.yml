@@ -1,0 +1,65 @@
+name: Adicionar assinatura Uebey
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/add-uebey-credit.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-footer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Inserir assinatura Uebey no rodapé
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          if 'class="uebey-credit"' in s:
+              print('Assinatura Uebey já existe; nenhuma alteração necessária.')
+              raise SystemExit(0)
+
+          old_css = ".footer{display:flex;justify-content:space-between;gap:20px}"
+          new_css = ".footer{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:24px}.footer>span:nth-child(2){text-align:right}.uebey-credit{justify-self:end;display:inline-flex;align-items:center;gap:8px;color:#8e8880;white-space:nowrap;transition:color .2s ease,opacity .2s ease;opacity:.82}.uebey-credit:hover{color:var(--gold2);opacity:1}.uebey-credit__icon{width:18px;height:20px;display:inline-flex;align-items:center;justify-content:center;color:var(--gold);filter:drop-shadow(0 0 8px rgba(233,184,71,.12))}.uebey-credit__icon svg{width:100%;height:100%;display:block}.uebey-credit strong{color:#aaa49a;font-weight:600;transition:color .2s ease}.uebey-credit:hover strong{color:var(--gold2)}"
+          if old_css not in s:
+              raise SystemExit('Trecho CSS do footer não encontrado; abortando para não alterar a página incorretamente.')
+          s = s.replace(old_css, new_css, 1)
+
+          old_mobile = ".footer{flex-direction:column}"
+          new_mobile = ".footer{grid-template-columns:1fr;gap:9px}.footer>span:nth-child(2){text-align:left}.uebey-credit{justify-self:end;margin-top:2px}"
+          if old_mobile in s:
+              s = s.replace(old_mobile, new_mobile, 1)
+
+          old_footer = '<footer><div class="wrap footer"><span>© 2026 Carlos Batista</span><span>Mágica • Interação • Experiência</span></div></footer>'
+          new_footer = '''<footer><div class="wrap footer"><span>© 2026 Carlos Batista</span><span>Mágica • Interação • Experiência</span><a class="uebey-credit" href="https://uebey.com" target="_blank" rel="noopener noreferrer" aria-label="Desenvolvido por Uebey"><span class="uebey-credit__icon" aria-hidden="true"><svg viewBox="0 0 30 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 3v17c0 8 4.6 13 11 13s11-5 11-13V3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M8 5v15c0 5.5 2.9 9 7 9s7-3.5 7-9V5" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".76"/><path d="M12 7v13c0 2.8 1.2 4.7 3 4.7s3-1.9 3-4.7V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".52"/></svg></span><span>Desenvolvido por <strong>Uebey</strong></span></a></div></footer>'''
+          if old_footer not in s:
+              raise SystemExit('Rodapé esperado não encontrado; abortando para não alterar a página incorretamente.')
+          s = s.replace(old_footer, new_footer, 1)
+
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Publicar alteração no main
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "Nada para publicar."
+            exit 0
+          fi
+          git config user.name "Rodrigo Sucupira"
+          git config user.email "64866757+rsucupira@users.noreply.github.com"
+          git add index.html
+          git commit -m "Adicionar assinatura discreta da Uebey no rodapé"
+          git push origin main
