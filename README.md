@@ -4,17 +4,23 @@ Landing page de divulgação de apresentações de mágica para eventos, empresa
 
 ## Vídeo principal
 
-O arquivo `magico.mp4` é exibido em destaque na primeira dobra da página, em moldura vertical 9:16. O vídeo inicia sem som para permitir reprodução automática; o visitante pode ativar o áudio nos controles.
+O arquivo canônico `magico.mp4` é exibido em destaque na página principal e também em `/aprenda/`.
+
+A versão atual de `magico.mp4` corresponde ao vídeo novo enviado em 13/08/2026. As páginas devem sempre referenciar esse caminho canônico, evitando links para nomes alternativos de arquivo.
 
 ## Publicação
 
-O repositório inclui um workflow do GitHub Pages em `.github/workflows/pages.yml`.
+O deploy oficial usa o fluxo GitHub → Cloudflare para o domínio UEBEY.
 
-URL prevista:
+URL canônica:
 
-`https://rsucupira.github.io/lp-magico/`
+`https://magico.uebey.com/`
 
-Caso seja a primeira publicação do repositório, em **Settings → Pages**, selecione **GitHub Actions** como fonte. Depois disso, novos commits serão publicados automaticamente.
+Subpágina:
+
+`https://magico.uebey.com/aprenda/`
+
+Novos commits na branch `main` são a fonte da publicação do site.
 
 ## Contatos configurados
 
